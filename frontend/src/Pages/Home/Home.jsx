@@ -1,26 +1,24 @@
-import React from 'react'
-import HeroSection from '../../components/HeroSection'
-import About from '../../components/About'
-import Qualities from '../../components/Qualities'
-import Menu from '../../components/Menu'
-import WhoAreWe from '../../components/WhoAreWe'
-import Team from '../../components/Team'
-import Reservation from '../../components/Reservation'
-import Footer from '../../components/Footer'
+import { useState } from "react";
+import Navbar from "../../components/Navbar";
+import HeroSection from "../../components/HeroSection";
+import Menu from "../../components/Menu";
+import About from "../../components/About";
+import Footer from "../../components/Footer";
 
-const Home = () => {
+const Home = ({ user, onLogout, onNavigate }) => {
+  const [activeSection, setActiveSection] = useState("home");
+
   return (
-    <>
-      <HeroSection/>
-      <About/>
-      <Qualities/>
-      <Menu/>
-      <WhoAreWe/>
-      <Team/>
-      <Reservation/>
-      <Footer/>
-    </>
-  )
-}
+    <div>
+      <Navbar user={user} onLogout={onLogout} onNavigate={onNavigate} setActiveSection={setActiveSection} />
+      
+      {activeSection === "home" && <HeroSection onNavigate={onNavigate} />}
+      {activeSection === "menu" && <Menu />}
+      {activeSection === "about" && <About />}
+      
+      <Footer />
+    </div>
+  );
+};
 
-export default Home
+export default Home;

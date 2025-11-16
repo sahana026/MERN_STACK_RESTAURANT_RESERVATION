@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import authRoutes from './routes/authRoutes.js';
 import reservationRoute from './routes/reservationRoute.js';
+import { errorMiddleware } from './middlewares/error.js';
 
 dotenv.config();
 const app = express();
@@ -12,12 +13,15 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:3000'],
   credentials: true
 }));
 
 app.use('/api/auth', authRoutes);
 app.use('/reservation', reservationRoute);
+
+// Error handling middleware
+app.use(errorMiddleware);
 
 // connect to mongo and start server ...
 mongoose.connect(process.env.MONGO_URI)

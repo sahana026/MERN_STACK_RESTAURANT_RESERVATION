@@ -1,36 +1,51 @@
-import React from "react";
-import Navbar from "./Navbar";
-
-const HeroSection = () => {
+const HeroSection = ({ onNavigate }) => {
   return (
-    <section className="heroSection" id="heroSection">
-      <Navbar />
-      <div className="container">
-        <div className="banner">
-          <div className="largeBox">
-            <h1 className="title">Delicious</h1>
-          </div>
-          <div className="combined_boxes">
-            <div className="imageBox">
-              <img src="./hero1.png" alt="hero" />
-            </div>
-            <div className="textAndLogo">
-              <div className="textWithSvg">
-                <h1 className="title">Food</h1>
-                <h1 className="title dishes_title">Dishes</h1>
-                <img src="./threelines.svg" alt="threelines" />
-              </div>
-              <img className="logo" src="logo.svg" alt="logo" />
-            </div>
-          </div>
-        </div>
-        <div className="banner">
-          <div className="imageBox">
-            <img src="hero2.png" alt="hero" />
-          </div>
-          <h1 className="title dishes_title">Dishes</h1>
-        </div>
-      </div>
+    <section
+      style={{
+        backgroundColor: "#1a1a1a",
+        color: "#fff",
+        padding: "100px 30px",
+        textAlign: "center",
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1517521271305-cd4628902046?w=1200')`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        minHeight: "600px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "column",
+      }}
+    >
+      <h1 style={{ fontSize: "56px", fontWeight: "bold", marginBottom: "20px" }}>
+        Welcome to Our Restaurant
+      </h1>
+      <p style={{ fontSize: "20px", marginBottom: "40px", maxWidth: "600px", lineHeight: "1.6" }}>
+        Experience the finest dining with our premium food and outstanding service. Reserve your table today!
+      </p>
+      <button
+        onClick={() => onNavigate("reservation")}
+        style={{
+          padding: "15px 40px",
+          backgroundColor: "#e74c3c",
+          color: "#fff",
+          border: "none",
+          borderRadius: "4px",
+          fontSize: "18px",
+          fontWeight: "bold",
+          cursor: "pointer",
+          transition: "all 0.3s",
+        }}
+        onMouseEnter={(e) => {
+          e.target.style.backgroundColor = "#c0392b";
+          e.target.style.transform = "scale(1.05)";
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.backgroundColor = "#e74c3c";
+          e.target.style.transform = "scale(1)";
+        }}
+      >
+        Reserve Now
+      </button>
     </section>
   );
 };
