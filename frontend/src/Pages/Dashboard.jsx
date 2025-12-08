@@ -16,37 +16,50 @@ const Dashboard = ({ user, onLogout, onNavigate }) => {
   }, []);
 
   const fetchDashboardData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('http://localhost:5000/reservation/all');
-      const data = await response.json();
+    const endpoints = [
+      'http://localhost:5000/reservation/all',
+      'http://localhost:5000/api/v1/reservation/all',
+    ];
 
-      if (data.success) {
-        const reservationsData = data.data || [];
-        setReservations(reservationsData);
+    // Reset state
+    setReservations([]);
+    setStats({
+      totalReservations: 0,
+      todayReservations: 0,
+      upcomingReservations: 0,
+    });
+    setError('');
+    setLoading(true);
 
-        // Calculate stats
-        const today = new Date().toISOString().split('T')[0];
-        const todayReservations = reservationsData.filter(
-          (r) => r.date === today
-        ).length;
-        const upcomingReservations = reservationsData.filter(
-          (r) => new Date(r.date) > new Date(today)
-        ).length;
+    for (const url of endpoints) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) continue;
+        const data = await response.json();
+        if (data && data.success && Array.isArray(data.data)) {
+          const reservationsData = data.data || [];
+          setReservations(reservationsData);
 
-        setStats({
-          totalReservations: reservationsData.length,
-          todayReservations,
-          upcomingReservations,
-        });
-      } else {
-        setError('Failed to fetch dashboard data');
+          const today = new Date().toISOString().split('T')[0];
+          const todayReservations = reservationsData.filter((r) => r.date === today).length;
+          const upcomingReservations = reservationsData.filter((r) => new Date(r.date) > new Date(today)).length;
+
+          setStats({
+            totalReservations: reservationsData.length,
+            todayReservations,
+            upcomingReservations,
+          });
+          setLoading(false);
+          return;
+        }
+      } catch (err) {
+        console.error(`Fetch failed for ${url}:`, err.message);
+        continue;
       }
-    } catch (err) {
-      setError('Error fetching data: ' + err.message);
-    } finally {
-      setLoading(false);
     }
+
+    setError('Failed to fetch dashboard data from server');
+    setLoading(false);
   };
 
   const filteredReservations = filterDate

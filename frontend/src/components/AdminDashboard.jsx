@@ -4,27 +4,48 @@ const AdminDashboard = ({ user, onLogout, onNavigate }) => {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [lastUpdated, setLastUpdated] = useState(null);
 
   useEffect(() => {
     fetchReservations();
   }, []);
 
   const fetchReservations = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("http://localhost:5000/reservation/all");
-      const data = await response.json();
+    // Try primary endpoint first, then fallback if needed
+    const endpoints = [
+      "http://localhost:5000/reservation/all",
+      "http://localhost:5000/api/v1/reservation/all",
+    ];
 
-      if (data.success) {
-        setReservations(data.data);
-      } else {
-        setError("Failed to fetch reservations");
+    setReservations([]);
+    setError("");
+    setLoading(true);
+
+    for (const url of endpoints) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          // Not ok (404/500) — try next endpoint
+          continue;
+        }
+
+        const data = await response.json();
+        if (data && data.success && Array.isArray(data.data)) {
+          setReservations(data.data);
+          setLastUpdated(new Date().toISOString());
+          setLoading(false);
+          return;
+        }
+      } catch (err) {
+        // network error — try next endpoint
+        console.error(`Fetch failed for ${url}:`, err.message);
+        continue;
       }
-    } catch (err) {
-      setError("Error fetching data: " + err.message);
-    } finally {
-      setLoading(false);
     }
+
+    // If we get here, both endpoints failed
+    setError("Failed to fetch reservations from server");
+    setLoading(false);
   };
 
   return (
@@ -107,33 +128,39 @@ const AdminDashboard = ({ user, onLogout, onNavigate }) => {
               marginBottom: "30px",
             }}
           >
-            <h2 style={{ margin: 0, color: "#333" }}>
-              All Reservations ({reservations.length})
-            </h2>
-            <button
-              onClick={fetchReservations}
-              style={{
-                padding: "10px 20px",
-                backgroundColor: "#333",
-                color: "#fff",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontSize: "14px",
-                fontWeight: "bold",
-              }}
-            >
-              Refresh
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <h2 style={{ margin: 0, color: "#333" }}>
+                All Reservations ({reservations.length})
+              </h2>
+              <button
+                onClick={fetchReservations}
+                disabled={loading}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: loading ? "#777" : "#333",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: loading ? "not-allowed" : "pointer",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                }}
+              >
+                {loading ? 'Refreshing...' : 'Refresh'}
+              </button>
+              {lastUpdated && (
+                <div style={{ fontSize: '12px', color: '#666' }}>
+                  Last updated: {new Date(lastUpdated).toLocaleString()}
+                </div>
+              )}
+            </div>
           </div>
 
-          {loading && (
+          {loading ? (
             <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
               Loading reservations...
             </div>
-          )}
-
-          {error && (
+          ) : error ? (
             <div
               style={{
                 color: "#d32f2f",
@@ -145,9 +172,7 @@ const AdminDashboard = ({ user, onLogout, onNavigate }) => {
             >
               {error}
             </div>
-          )}
-
-          {!loading && reservations.length === 0 ? (
+          ) : reservations.length === 0 ? (
             <div style={{ textAlign: "center", padding: "40px", color: "#999" }}>
               No reservations yet
             </div>
