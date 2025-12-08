@@ -16,8 +16,10 @@ const Reservation = ({ user, onLogout, onViewAdmin }) => {
     setLoading(true);
     setError("");
     setSuccess(false);
+    console.log("Reservation button clicked");
 
     try {
+      console.log("Sending reservation data:", { firstName, lastName, email, phone, date, time });
       const response = await fetch("http://localhost:5000/reservation/send", {
         method: "POST",
         headers: {
@@ -36,6 +38,7 @@ const Reservation = ({ user, onLogout, onViewAdmin }) => {
       const data = await response.json();
 
       if (response.ok) {
+        console.log("Reservation successful:", data);
         setSuccess(true);
         setFirstName("");
         setLastName("");
@@ -48,6 +51,7 @@ const Reservation = ({ user, onLogout, onViewAdmin }) => {
       }
     } catch (err) {
       console.error("Reservation error:", err);
+      console.log("Reservation error:", err);
       setError("Error making reservation: " + err.message);
     } finally {
       setLoading(false);
