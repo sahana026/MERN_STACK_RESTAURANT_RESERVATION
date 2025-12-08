@@ -47,7 +47,7 @@ const About = () => {
           }}
         >
           <img
-            src="https://images.unsplash.com/photo-1504674900306-873490d94519?w=500&h=500&fit=crop"
+            src="/about.png"
             alt="Restaurant"
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />

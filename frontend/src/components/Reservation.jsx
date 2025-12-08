@@ -149,8 +149,8 @@ const Reservation = ({ user, onLogout, onViewAdmin }) => {
           }}
         >
           <img
-            src="https://via.placeholder.com/400x300?text=Restaurant+Reservation"
-            alt="Restaurant"
+            src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&h=300&fit=crop"
+            alt="Restaurant Reservation"
             style={{
               maxWidth: "100%",
               borderRadius: "8px",

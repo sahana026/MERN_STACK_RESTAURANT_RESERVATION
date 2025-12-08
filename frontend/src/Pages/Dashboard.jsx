@@ -85,6 +85,22 @@ const Dashboard = ({ user, onLogout, onNavigate }) => {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <button
+            onClick={fetchDashboardData}
+            disabled={loading}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: loading ? '#666' : '#4caf50',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              fontSize: '14px',
+              fontWeight: 'bold',
+            }}
+          >
+            {loading ? 'Refreshing...' : '🔄 Refresh'}
+          </button>
+          <button
             onClick={() => onNavigate('home')}
             style={{
               padding: '10px 20px',
