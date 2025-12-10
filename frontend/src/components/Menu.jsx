@@ -3,8 +3,7 @@ const Menu = () => {
     { id: 1, title: "Grilled Salmon", category: "Seafood", price: "$18", image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&h=300&fit=crop" },
     { id: 2, title: "Beef Steak", category: "Meat", price: "$22", image: "https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=300&h=300&fit=crop" },
     { id: 3, title: "Pasta Carbonara", category: "Italian", price: "$14", image: "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=300&h=300&fit=crop" },
-    // Uses local image if present in public/images, falls back to remote if missing
-    { id: 4, title: "Chicken Biryani", category: "Indian", price: "$12", image: "/images/chicken-biryani.jpg" },
+    { id: 4, title: "Paneer Tikka", category: "Indian", price: "$11", image: "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=300&h=300&fit=crop" },
     { id: 5, title: "Vegetable Sushi", category: "Asian", price: "$15", image: "https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=300&h=300&fit=crop" },
     { id: 6, title: "Margherita Pizza", category: "Italian", price: "$13", image: "https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?w=300&h=300&fit=crop" },
   ];
@@ -45,7 +44,7 @@ const Menu = () => {
                 boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                 transition: "transform 0.3s, box-shadow 0.3s",
                 cursor: "pointer",
-                border: dish.title === 'Chicken Biryani' ? '3px solid #e74c3c' : 'none',
+                border: dish.title === 'Paneer Tikka' ? '3px solid #e74c3c' : 'none',
                 position: 'relative',
               }}
               onMouseEnter={(e) => {
@@ -57,7 +56,7 @@ const Menu = () => {
                 e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)";
               }}
             >
-              {dish.title === 'Chicken Biryani' && (
+              {dish.title === 'Paneer Tikka' && (
                 <div style={{ position: 'absolute', top: 12, left: 12, backgroundColor: '#e74c3c', color: '#fff', padding: '6px 10px', borderRadius: 6, fontWeight: 'bold', fontSize: 12, zIndex: 5 }}>
                   Featured
                 </div>

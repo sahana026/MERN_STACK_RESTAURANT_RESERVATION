@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const Reservation = ({ user, onLogout, onViewAdmin }) => {
+const Reservation = ({ user, onLogout, onViewAdmin, onNavigate = () => {} }) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState(user?.email || "");

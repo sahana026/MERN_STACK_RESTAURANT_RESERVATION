@@ -23,7 +23,9 @@ const AdminDashboard = ({ user, onLogout, onNavigate }) => {
 
     for (const url of endpoints) {
       try {
-        const response = await fetch(url);
+        // Add timestamp to prevent caching
+        const cacheBustUrl = `${url}?t=${Date.now()}`;
+        const response = await fetch(cacheBustUrl);
         if (!response.ok) {
           // Not ok (404/500) — try next endpoint
           continue;
@@ -46,6 +48,38 @@ const AdminDashboard = ({ user, onLogout, onNavigate }) => {
     // If we get here, both endpoints failed
     setError("Failed to fetch reservations from server");
     setLoading(false);
+  };
+
+  const clearAllData = async () => {
+    const confirmClear = window.confirm("Are you sure you want to delete ALL reservations? This action cannot be undone.");
+    if (!confirmClear) return;
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch("http://localhost:5000/reservation/clear-all", {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to clear data");
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        setReservations([]);
+        setLastUpdated(new Date().toISOString());
+        alert(`Successfully deleted ${data.deletedCount} reservations`);
+      } else {
+        throw new Error(data.message || "Failed to clear data");
+      }
+    } catch (err) {
+      console.error("Clear data error:", err);
+      setError("Failed to clear reservations: " + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -133,11 +167,11 @@ const AdminDashboard = ({ user, onLogout, onNavigate }) => {
                 All Reservations ({reservations.length})
               </h2>
               <button
-                onClick={fetchReservations}
+                onClick={clearAllData}
                 disabled={loading}
                 style={{
                   padding: "10px 20px",
-                  backgroundColor: loading ? "#777" : "#333",
+                  backgroundColor: loading ? "#777" : "#d32f2f",
                   color: "#fff",
                   border: "none",
                   borderRadius: "4px",
@@ -146,7 +180,23 @@ const AdminDashboard = ({ user, onLogout, onNavigate }) => {
                   fontWeight: "bold",
                 }}
               >
-                {loading ? 'Refreshing...' : 'Refresh'}
+                {loading ? 'Clearing...' : 'Refresh'}
+              </button>
+              <button
+                onClick={clearAllData}
+                disabled={loading || reservations.length === 0}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: (loading || reservations.length === 0) ? "#ccc" : "#d32f2f",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: (loading || reservations.length === 0) ? "not-allowed" : "pointer",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                }}
+              >
+                Clear All Data
               </button>
               {lastUpdated && (
                 <div style={{ fontSize: '12px', color: '#666' }}>

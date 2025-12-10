@@ -24,4 +24,22 @@ router.get("/all", async (req, res) => {
   }
 });
 
+// Clear all reservations
+router.delete("/clear-all", async (req, res) => {
+  try {
+    const result = await Reservation.deleteMany({});
+    res.json({
+      success: true,
+      message: `Successfully deleted ${result.deletedCount} reservations`,
+      deletedCount: result.deletedCount,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error clearing reservations",
+      error: error.message,
+    });
+  }
+});
+
 export default router;

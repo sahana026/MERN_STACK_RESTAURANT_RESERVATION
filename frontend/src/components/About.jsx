@@ -1,4 +1,11 @@
 const About = () => {
+  const handleExploreMenu = () => {
+    const menuSection = document.getElementById('menu');
+    if (menuSection) {
+      menuSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section
       style={{
@@ -21,6 +28,7 @@ const About = () => {
             With over 15 years of experience in the hospitality industry, we've built a reputation for excellence, outstanding service, and a warm, welcoming atmosphere. Whether you're celebrating a special occasion or enjoying a casual meal with friends and family, we're committed to making your experience unforgettable.
           </p>
           <button
+            onClick={handleExploreMenu}
             style={{
               padding: "12px 30px",
               backgroundColor: "#e74c3c",
