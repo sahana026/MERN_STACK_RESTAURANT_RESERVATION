@@ -1,44 +1,31 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { AuthContext } from "../AuthContext";
 
-export default function Login({ onLogin }) {
+export default function Login() {
+  const { login } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [isRegister, setIsRegister] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      const endpoint = isRegister ? "/api/auth/register" : "/api/auth/login";
       const body = isRegister
         ? { name, email, password }
         : { email, password };
-
-      const response = await fetch(`http://localhost:5000${endpoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-        credentials: "include",
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        onLogin(data.user, data.token);
-        setEmail("");
-        setPassword("");
-        setName("");
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Authentication failed");
-      }
+      await login(body);
+      // No need to call onLogin, context handles it.
+      // Clearing fields can be done here if needed, but navigation will happen.
+      setEmail("");
+      setPassword("");
+      setName("");
     } catch (err) {
-      console.error("Auth error:", err);
-      setError("Connection error. Check if backend is running.");
+      setError(err.response?.data?.message || "Authentication failed. Check credentials or server status.");
     } finally {
       setLoading(false);
     }

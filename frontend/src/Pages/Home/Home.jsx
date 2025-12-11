@@ -1,20 +1,18 @@
 import { useState } from "react";
-import Navbar from "../../components/Navbar";
 import HeroSection from "../../components/HeroSection";
 import Menu from "../../components/Menu";
 import About from "../../components/About";
 import Footer from "../../components/Footer";
 
-const Home = ({ user, onLogout, onNavigate }) => {
-  const [activeSection, setActiveSection] = useState("home");
-
+const Home = ({ user, onLogout, onNavigate, setActiveSection }) => {
   return (
     <div>
-      <Navbar user={user} onLogout={onLogout} onNavigate={onNavigate} setActiveSection={setActiveSection} />
+      {/* Navbar is rendered in App.jsx, not here */}
       
-      {activeSection === "home" && <HeroSection onNavigate={onNavigate} />}
-      {activeSection === "menu" && <Menu />}
-      {activeSection === "about" && <About />}
+      {/* Content sections - controlled by activeSection from App.jsx */}
+      <HeroSection onNavigate={onNavigate} />
+      <Menu />
+      <About />
       
       <Footer />
     </div>

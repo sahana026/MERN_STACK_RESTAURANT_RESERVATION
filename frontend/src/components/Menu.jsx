@@ -1,5 +1,6 @@
 const Menu = () => {
   const dishes = [
+    { id: 7, title: "Chicken Biryani", category: "Indian", price: "$16", image: "/images/chicken-biryani.svg" },
     { id: 1, title: "Grilled Salmon", category: "Seafood", price: "$18", image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&h=300&fit=crop" },
     { id: 2, title: "Beef Steak", category: "Meat", price: "$22", image: "https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=300&h=300&fit=crop" },
     { id: 3, title: "Pasta Carbonara", category: "Italian", price: "$14", image: "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=300&h=300&fit=crop" },
@@ -65,9 +66,14 @@ const Menu = () => {
                 src={dish.image}
                 alt={dish.title}
                 onError={(e) => {
-                  // Fallback to a remote Unsplash image if local file is missing
+                  // Try a JPG version if SVG not supported or missing, then remote Unsplash
                   e.currentTarget.onerror = null;
-                  e.currentTarget.src = "https://images.unsplash.com/photo-1563379091339-03246963d4d8?w=300&h=300&fit=crop";
+                  const fallbackLocal = dish.image.replace(/\.svg$/i, '.jpg');
+                  e.currentTarget.src = fallbackLocal;
+                  setTimeout(() => {
+                    if (e.currentTarget.src && e.currentTarget.src.endsWith('.jpg')) return;
+                    e.currentTarget.src = "https://images.unsplash.com/photo-1563379091339-03246963d4d8?w=300&h=300&fit=crop";
+                  }, 200);
                 }}
                 style={{ width: "100%", height: "200px", objectFit: "cover" }}
               />

@@ -1,11 +1,11 @@
 import express from 'express';
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import User from '../User.js';
+import User from '../models/User.js';
 
 const router = express.Router();
 
-// Register
+// POST /api/auth/register
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -44,7 +44,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login
+// POST /api/auth/login
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -75,7 +75,7 @@ router.post('/login', async (req, res) => {
     });
 
     res.json({ 
-      user: { id: user._id, name: user.name, email: user.email },
+      user: { id: user._id, name: user.name, email: user.email, role: user.role },
       token 
     });
   } catch (err) {
@@ -84,7 +84,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Logout
+// POST /api/auth/logout
 router.post('/logout', (req, res) => {
   res.clearCookie('token', { httpOnly: true, sameSite: 'lax' });
   res.json({ message: 'Logged out' });

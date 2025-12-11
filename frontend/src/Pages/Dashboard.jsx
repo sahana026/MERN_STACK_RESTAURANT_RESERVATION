@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext, useMemo, useCallback } from 'react';
+import { AuthContext } from '../AuthContext';
+import api from '../api/axios';
 
-const Dashboard = ({ user, onLogout, onNavigate }) => {
+const Dashboard = ({ onNavigate }) => {
   const [reservations, setReservations] = useState([]);
   const [stats, setStats] = useState({
     totalReservations: 0,
@@ -10,62 +12,51 @@ const Dashboard = ({ user, onLogout, onNavigate }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filterDate, setFilterDate] = useState('');
+  const { user, logout } = useContext(AuthContext);
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
-  const fetchDashboardData = async () => {
-    const endpoints = [
-      'http://localhost:5000/reservation/all',
-      'http://localhost:5000/api/v1/reservation/all',
-    ];
-
-    // Reset state
-    setReservations([]);
-    setStats({
-      totalReservations: 0,
-      todayReservations: 0,
-      upcomingReservations: 0,
-    });
+  const fetchDashboardData = useCallback(async () => {
     setError('');
     setLoading(true);
 
-    for (const url of endpoints) {
-      try {
-        const response = await fetch(url);
-        if (!response.ok) continue;
-        const data = await response.json();
-        if (data && data.success && Array.isArray(data.data)) {
-          const reservationsData = data.data || [];
-          setReservations(reservationsData);
+    try {
+      // Use the axios instance which has the correct base URL and credentials config
+      const response = await api.get('/reservation/all');
+      const { data } = response;
 
-          const today = new Date().toISOString().split('T')[0];
-          const todayReservations = reservationsData.filter((r) => r.date === today).length;
-          const upcomingReservations = reservationsData.filter((r) => new Date(r.date) > new Date(today)).length;
+      if (data && data.success && Array.isArray(data.data)) {
+        const reservationsData = data.data || [];
+        setReservations(reservationsData);
 
-          setStats({
-            totalReservations: reservationsData.length,
-            todayReservations,
-            upcomingReservations,
-          });
-          setLoading(false);
-          return;
-        }
-      } catch (err) {
-        console.error(`Fetch failed for ${url}:`, err.message);
-        continue;
+        const today = new Date().toISOString().split('T')[0];
+        const todayReservations = reservationsData.filter((r) => r.date === today).length;
+        const upcomingReservations = reservationsData.filter((r) => r.date > today).length;
+
+        setStats({
+          totalReservations: reservationsData.length,
+          todayReservations,
+          upcomingReservations,
+        });
+      } else {
+        setError('Failed to parse dashboard data.');
       }
+    } catch (err) {
+      console.error('Fetch failed for dashboard data:', err.message);
+      setError(err.response?.data?.message || 'Failed to fetch dashboard data from server.');
+    } finally {
+      setLoading(false);
     }
+  }, []);
 
-    setError('Failed to fetch dashboard data from server');
-    setLoading(false);
-  };
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
-  const filteredReservations = filterDate
-    ? reservations.filter((r) => r.date === filterDate)
-    : reservations;
-
+  const filteredReservations = useMemo(() => {
+    if (!filterDate) {
+      return reservations;
+    }
+    return reservations.filter((r) => r.date === filterDate);
+  }, [reservations, filterDate]);
   return (
     <div
       style={{
@@ -129,7 +120,7 @@ const Dashboard = ({ user, onLogout, onNavigate }) => {
             Back to Home
           </button>
           <button
-            onClick={onLogout}
+            onClick={logout}
             style={{
               padding: '10px 20px',
               backgroundColor: '#d32f2f',

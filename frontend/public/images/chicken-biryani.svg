@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0%" stop-color="#ffd89b"/>
+      <stop offset="100%" stop-color="#19547b"/>
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="#fff7ed"/>
+  <g transform="translate(80,80)">
+    <ellipse cx="320" cy="240" rx="260" ry="120" fill="#f7d7a3" stroke="#e0a85a" stroke-width="4"/>
+    <g>
+      <circle cx="220" cy="200" r="48" fill="#f9b462" stroke="#e08a3a" stroke-width="3"/>
+      <circle cx="270" cy="180" r="38" fill="#f6a95b" stroke="#d37a2f" stroke-width="3"/>
+      <circle cx="330" cy="195" r="44" fill="#f6c07a" stroke="#d99a49" stroke-width="3"/>
+      <circle cx="390" cy="185" r="36" fill="#f2a85b" stroke="#c97a2a" stroke-width="3"/>
+    </g>
+    <text x="320" y="360" font-family="Segoe UI, Arial" font-size="36" text-anchor="middle" fill="#b35400">Chicken Biryani</text>
+    <text x="320" y="400" font-family="Segoe UI, Arial" font-size="14" text-anchor="middle" fill="#6b4b2b">Aromatic rice with tender chicken</text>
+  </g>
+</svg>

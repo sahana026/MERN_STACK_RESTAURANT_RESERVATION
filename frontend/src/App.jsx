@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext } from 'react';
 import './App.css';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
@@ -8,77 +8,70 @@ import Reservation from './components/Reservation';
 import Footer from './components/Footer';
 import Team from './components/Team';
 import Qualities from './components/Qualities';
-import AuthContext from './AuthContext';
+import { AuthContext, AuthProvider } from './AuthContext';
 import Login from './Pages/Login';
-import Home from './Pages/Home/Home';
 import Dashboard from './Pages/Dashboard';
 import AdminDashboard from './components/AdminDashboard';
 import Success from './Pages/Success/Success';
 
-function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
-  const [currentPage, setCurrentPage] = useState('home');
-
-  const handleLogin = (userData) => {
-    setUser(userData);
-    setIsLoggedIn(true);
-    setCurrentPage(userData.role === 'admin' ? 'admin' : 'dashboard');
-  };
-
-  const handleLogout = () => {
-    setUser(null);
-    setIsLoggedIn(false);
-    setCurrentPage('home');
-  };
+function AppContent() {
+  const { user, currentPage, setCurrentPage } = useContext(AuthContext);
 
   const handleNavigate = (page) => {
     setCurrentPage(page);
   };
 
   const renderPage = () => {
-    if (!isLoggedIn) {
+    if (!user) {
       if (currentPage === 'login') {
-        return <Login onLogin={handleLogin} />;
+        return <Login />;
       }
-      return <Home onNavigate={handleNavigate} />;
+      // For home page, render nothing here (content below will render)
+      return null;
     }
 
-    if (user?.role === 'admin') {
-      if (currentPage === 'admin') {
-        return <AdminDashboard user={user} onLogout={handleLogout} onNavigate={handleNavigate} />;
-      }
-      return <Home onNavigate={handleNavigate} />;
+    if (user.role === 'admin' && currentPage === 'admin') {
+      return <AdminDashboard onNavigate={handleNavigate} />;
     }
 
     if (currentPage === 'dashboard') {
-      return <Dashboard user={user} onLogout={handleLogout} onNavigate={handleNavigate} />;
+      return <Dashboard onNavigate={handleNavigate} />;
     }
     if (currentPage === 'success') {
       return <Success />;
     }
 
-    return <Home onNavigate={handleNavigate} />;
+    return null;
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, user, setUser }}>
-      <div className="App">
-        <Navbar isLoggedIn={isLoggedIn} user={user} onLogout={handleLogout} onNavigate={handleNavigate} setActiveSection={setCurrentPage} />
-        {renderPage()}
-        {!isLoggedIn && (
-          <>
-            <HeroSection onNavigate={handleNavigate} />
-            <Menu id="menu" />
-            <About />
-            <Team />
-            <Qualities />
-            <Reservation user={user} onLogout={handleLogout} onNavigate={handleNavigate} onViewAdmin={() => {}} />
-          </>
-        )}
-        <Footer />
-      </div>
-    </AuthContext.Provider>
+    <div className="App">
+      <Navbar onNavigate={handleNavigate} setActiveSection={setCurrentPage} />
+      {renderPage()}
+      {!user && (
+        <>
+          {['home', 'menu', 'about', 'team', 'qualities', 'reservation'].includes(currentPage) && (
+            <>
+              <HeroSection onNavigate={handleNavigate} />
+              <Menu id="menu" />
+              <About />
+              <Team />
+              <Qualities />
+              <Reservation onNavigate={handleNavigate} onViewAdmin={() => {}} />
+            </>
+          )}
+        </>
+      )}
+      <Footer />
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 
